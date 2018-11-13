@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_wordp" default="compile.module.wordp">
+  <dirname property="module.wordp.basedir" file="${ant.file.module_wordp}"/>
+  
+  <property name="module.jdk.home.wordp" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.wordp" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.wordp" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.wordp" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="wordp.output.dir" value="${module.wordp.basedir}/out/production/Wordp"/>
+  <property name="wordp.testoutput.dir" value="${module.wordp.basedir}/out/test/Wordp"/>
+  
+  <path id="wordp.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="wordp.module.production.classpath">
+    <path refid="${module.jdk.classpath.wordp}"/>
+  </path>
+  
+  <path id="wordp.runtime.production.module.classpath">
+    <pathelement location="${wordp.output.dir}"/>
+  </path>
+  
+  <path id="wordp.module.classpath">
+    <path refid="${module.jdk.classpath.wordp}"/>
+    <pathelement location="${wordp.output.dir}"/>
+  </path>
+  
+  <path id="wordp.runtime.module.classpath">
+    <pathelement location="${wordp.testoutput.dir}"/>
+    <pathelement location="${wordp.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.wordp">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.wordp">
+    <patternset refid="excluded.from.module.wordp"/>
+  </patternset>
+  
+  <path id="wordp.module.sourcepath">
+    <dirset dir="${module.wordp.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.wordp" depends="compile.module.wordp.production,compile.module.wordp.tests" description="Compile module Wordp"/>
+  
+  <target name="compile.module.wordp.production" depends="register.custom.compilers" description="Compile module Wordp; production classes">
+    <mkdir dir="${wordp.output.dir}"/>
+    <javac2 destdir="${wordp.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.wordp}/javac">
+      <compilerarg line="${compiler.args.wordp}"/>
+      <bootclasspath refid="wordp.module.bootclasspath"/>
+      <classpath refid="wordp.module.production.classpath"/>
+      <src refid="wordp.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.wordp"/>
+    </javac2>
+    
+    <copy todir="${wordp.output.dir}">
+      <fileset dir="${module.wordp.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.wordp.tests" depends="register.custom.compilers,compile.module.wordp.production" description="compile module Wordp; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.wordp" description="cleanup module">
+    <delete dir="${wordp.output.dir}"/>
+    <delete dir="${wordp.testoutput.dir}"/>
+  </target>
+</project>
